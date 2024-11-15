@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Calibration.h"
+#include "LightPointCalculation.h"
 #include <opencv2/opencv.hpp>
 #include <opencv2/calib3d/calib3d.hpp>
 #include <vector>
@@ -12,6 +13,9 @@ const Size calibrationPatternSize = Size(6, 9);
 vector<vector<Point3f>> worldCalibrationPoints = { vector<Point3f>() };
 
 int main() {
+	LightPointCalculation l = LightPointCalculation();
+	l.calibrate();
+
 	namedWindow("OpenCV Test", WINDOW_NORMAL); 
 
 	constexpr int SCALE = 100;

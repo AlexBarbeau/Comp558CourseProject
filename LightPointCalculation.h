@@ -15,7 +15,7 @@ private:
 
 public:
 
-	int main()
+	void calibrate()
 	{
 
 		K = (Mat_<double>(3, 3) << 1, 0, 1,
@@ -80,13 +80,21 @@ public:
 		int displayHeight = static_cast<int>(image.rows * scale);
 		namedWindow("Display", WINDOW_NORMAL);
 		resizeWindow("Display", displayWidth, displayHeight);
-		setMouseCallback("Display", onMouse, this);
+
+		setMouseCallback("Display", &LightPointCalculation::onMouse, this);
 
 		while (points.size() < 2)
 		{
 			imshow("Display", image);
 			waitKey(1);
 		}
+
+		setMouseCallback("Display", nullptr);
+
+		Mat preview = image;
+		arrowedLine(preview, points[0], points[1], Scalar(255, 0, 255), 8);
+		imshow("Display", preview);
+		waitKey(0);
 
 		return points;
 	}
