@@ -7,23 +7,20 @@ using namespace cv;
 
 class LightPointCalculation
 {
-private:
-	vector<Point2d> points;
-	vector<Point3d> threeDPoints;
-
 public:
 
 	Point3d findLightPosition(const Mat& homography, const Mat& image1, double caster1Height, const Mat& image2, double caster2Height)
 	{
 		Point3d intersect;
+		vector<Point2d> shadowPoints;
 
-		PickShadowPoints(image1);
+		PickShadowPoints(image1, shadowPoints);
 		vector<Point2d> worldPoints1 = vector<Point2d>();
-		perspectiveTransform(points, worldPoints1, homography);
+		perspectiveTransform(shadowPoints, worldPoints1, homography);
 
-		PickShadowPoints(image2);
+		PickShadowPoints(image2, shadowPoints);
 		vector<Point2d> worldPoints2 = vector<Point2d>();
-		perspectiveTransform(points, worldPoints2, homography);
+		perspectiveTransform(shadowPoints, worldPoints2, homography);
 
 		closestPointsOnLines(
 			Point3d(worldPoints1[0].x, worldPoints1[0].y, caster1Height),
@@ -37,9 +34,9 @@ public:
 		return intersect;
 	}
 
-	vector<Point2d> PickShadowPoints(const Mat& image)
+	void PickShadowPoints(const Mat& image, vector<Point2d>& selectedPoints)
 	{
-		points.clear();
+		selectedPoints.clear();
 
 		if (image.empty()) {
 			cout << "Could not open or find the image" << endl;
@@ -52,44 +49,44 @@ public:
 		double scale = min(scaleWidth, scaleHeight);
 		int displayWidth = static_cast<int>(image.cols * scale);
 		int displayHeight = static_cast<int>(image.rows * scale);
-		namedWindow("Display", WINDOW_NORMAL);
-		resizeWindow("Display", displayWidth, displayHeight);
+		namedWindow("Select Shadow Points", WINDOW_NORMAL);
+		resizeWindow("Select Shadow Points", displayWidth, displayHeight);
 
-		setMouseCallback("Display", &LightPointCalculation::onMouse, this);
+		setMouseCallback("Select Shadow Points", &LightPointCalculation::onMouse, &selectedPoints);
 
-		while (points.size() < 2)
+		while (selectedPoints.size() < 2)
 		{
-			imshow("Display", image);
+			imshow("Select Shadow Points", image);
 			waitKey(1);
 		}
 
-		setMouseCallback("Display", nullptr);
+		setMouseCallback("Select Shadow Points", nullptr);
 
-		Mat preview = image;
-		arrowedLine(preview, points[0], points[1], Scalar(255, 0, 255), 8);
-		imshow("Display", preview);
+		Mat preview = image.clone();
+		arrowedLine(preview, selectedPoints[0], selectedPoints[1], Scalar(255, 0, 255), 8);
+		imshow("Select Shadow Points", preview);
 		waitKey(0);
 
-		return points;
+		destroyWindow("Select Shadow Points");
 	}
 
 	static void onMouse(int event, int x, int y, int flags, void* userdata) {
 
-		LightPointCalculation* self = static_cast<LightPointCalculation*>(userdata);
+		vector<Point2d>& selectedPoints = *static_cast<vector<Point2d>*>(userdata);
 
 		if (event == EVENT_LBUTTONDOWN) {
 			Mat* image = reinterpret_cast<Mat*>(userdata);
 
 			Vec3b pixel = image->at<Vec3b>(y, x);
 
-			self->points.push_back(Point(x, y));
+			selectedPoints.push_back(Point(x, y));
 		}
 	}
 
 	bool closestPointsOnLines(const Point3d& P1, const Point3d& D1,
 		const Point3d& P2, const Point3d& D2,
 		Point3d& intersectionPoint, double tolerance = 1e-2) {
-		Point3d P12 = P2 - P1;
+		Point3d P12 = P1 - P2;
 		double d1d1 = D1.dot(D1);
 		double d2d2 = D2.dot(D2);
 		double d1d2 = D1.dot(D2);
