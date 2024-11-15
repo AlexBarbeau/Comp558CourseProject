@@ -8,64 +8,38 @@ using namespace cv;
 class LightPointCalculation
 {
 private:
-	vector<Point> points;
+	vector<Point2d> points;
 	vector<Point3d> threeDPoints;
-	Mat image;
-	Mat K, R, t;
 
 public:
 
-	void calibrate()
+	Point3d findLightPosition(const Mat& homography, const Mat& image1, double caster1Height, const Mat& image2, double caster2Height)
 	{
-
-		K = (Mat_<double>(3, 3) << 1, 0, 1,
-								   0, 1, 1,
-								   0, 0, 1.0);
-
-		R = (Mat_<double>(3, 3) << 
-			1,0,0,
-			0,0.707, -0.707,
-			0,0.707 ,0.707);
-
-		t = (Mat_<double>(3, 1) << 3, 26, -19);
-
 		Point3d intersect;
 
-		PickShadowPoints("Unity.png");
-		Calculate3DPositions();
+		PickShadowPoints(image1);
+		vector<Point2d> worldPoints1 = vector<Point2d>();
+		perspectiveTransform(points, worldPoints1, homography);
 
-		//cout << points << endl;
-		PickShadowPoints("Unity.png");
-		Calculate3DPositions();
+		PickShadowPoints(image2);
+		vector<Point2d> worldPoints2 = vector<Point2d>();
+		perspectiveTransform(points, worldPoints2, homography);
 
-		closestPointsOnLines(threeDPoints[0] + Point3d(0,0,17), 
-			threeDPoints[0] + Point3d(0,0,17) - threeDPoints[1],
-			threeDPoints[3] + Point3d(0, 0, 17), 
-			threeDPoints[3] + Point3d(0, 0, 17) - threeDPoints[2], 
+		closestPointsOnLines(
+			Point3d(worldPoints1[0].x, worldPoints1[0].y, caster1Height),
+			Point3d(worldPoints1[0].x - worldPoints1[1].x, worldPoints1[0].y - worldPoints1[1].y, caster1Height),
+			Point3d(worldPoints2[0].x, worldPoints2[0].y, caster2Height),
+			Point3d(worldPoints2[0].x - worldPoints2[1].x, worldPoints2[0].y - worldPoints2[1].y, caster2Height),
 			intersect, 100);
 
 		cout << intersect << endl;
+
+		return intersect;
 	}
 
-	void Calculate3DPositions()
-	{
-		for (int i = 0; i < points.size(); i++)
-		{
-			Mat p_img = (Mat_<double>(3, 1) << points[i].x, points[i].y, 1.0);
-			Mat d_camera = K.inv() * p_img;
-
-			Mat d_world = R.t() * d_camera;
-			double x = -(t.at<double>(2, 0) / d_world.at<double>(2, 0));
-
-			Mat p_world = t + x * d_world;
-			threeDPoints.push_back(Point3d(p_world.at<double>(0,0), p_world.at<double>(1, 0), p_world.at<double>(2, 0)));
-		}
-	}
-
-	vector<Point> PickShadowPoints(string ImgPath)
+	vector<Point2d> PickShadowPoints(const Mat& image)
 	{
 		points.clear();
-		image = imread(ImgPath);
 
 		if (image.empty()) {
 			cout << "Could not open or find the image" << endl;
@@ -135,6 +109,12 @@ public:
 		Point3d closestPoint2 = P2 + s * D2;
 
 		double distance = norm(closestPoint1 - closestPoint2);
+
+		cout << P1 << '\n';
+		cout << D1 << "\n\n";
+		cout << P2 << '\n';
+		cout << D2 << "\n\n";
+		cout << distance << '\n';
 
 		// Check if the distance is within the tolerance
 		if (distance <= tolerance) {

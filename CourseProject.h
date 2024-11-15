@@ -13,9 +13,6 @@ const Size calibrationPatternSize = Size(6, 9);
 vector<vector<Point3f>> worldCalibrationPoints = { vector<Point3f>() };
 
 int main() {
-	LightPointCalculation l = LightPointCalculation();
-	l.calibrate();
-
 	namedWindow("OpenCV Test", WINDOW_NORMAL); 
 
 	constexpr int SCALE = 100;
@@ -41,6 +38,9 @@ int main() {
 
 	imshow("OpenCV Test", warpedImage);
 	waitKey(0);
+
+	LightPointCalculation l = LightPointCalculation();
+	cout << l.findLightPosition(homography, image, SCALE, image, SCALE);
 
 	return 0;
 }
