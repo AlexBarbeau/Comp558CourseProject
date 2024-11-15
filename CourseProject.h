@@ -15,7 +15,7 @@ vector<vector<Point3f>> worldCalibrationPoints = { vector<Point3f>() };
 int main() {
 	namedWindow("OpenCV Test", WINDOW_NORMAL); 
 
-	Mat image = imread("./checkerboard.jpg", 1);
+	Mat image = imread("./Unity2.png", 1);
 	Mat homography;
 	findHomographyForCheckerboard(image, Size(6, 9), homography);
 
@@ -32,7 +32,7 @@ int main() {
 	waitKey(0);
 
 	LightPointCalculation l = LightPointCalculation();
-	Point3d lightPosition = l.findLightPosition(homography, image, 1, image, 1);
+	Point3d lightPosition = l.findLightPosition(homography, image, 5, image, 5);
 
 	vector<Point2d> lightXY = { Point2d(lightPosition.x, lightPosition.y) };
 	vector<Point2d> lightImagePos;

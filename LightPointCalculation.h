@@ -9,7 +9,7 @@ class LightPointCalculation
 {
 public:
 
-	Point3d findLightPosition(const Mat& homography, const Mat& image1, double caster1Height, const Mat& image2, double caster2Height)
+	Point3d findLightPosition(const Mat& homography, const Mat& image1, double caster1Height, const Mat& image2, double caster2Height, double tolerance = 4)
 	{
 		Point3d intersect;
 		vector<Point2d> shadowPoints;
@@ -27,9 +27,7 @@ public:
 			Point3d(worldPoints1[0].x - worldPoints1[1].x, worldPoints1[0].y - worldPoints1[1].y, caster1Height),
 			Point3d(worldPoints2[0].x, worldPoints2[0].y, caster2Height),
 			Point3d(worldPoints2[0].x - worldPoints2[1].x, worldPoints2[0].y - worldPoints2[1].y, caster2Height),
-			intersect, 100);
-
-		cout << intersect << endl;
+			intersect, tolerance);
 
 		return intersect;
 	}
@@ -106,12 +104,6 @@ public:
 		Point3d closestPoint2 = P2 + s * D2;
 
 		double distance = norm(closestPoint1 - closestPoint2);
-
-		cout << P1 << '\n';
-		cout << D1 << "\n\n";
-		cout << P2 << '\n';
-		cout << D2 << "\n\n";
-		cout << distance << '\n';
 
 		// Check if the distance is within the tolerance
 		if (distance <= tolerance) {
