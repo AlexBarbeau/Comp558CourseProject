@@ -7,21 +7,22 @@
 using namespace cv;
 using namespace std;
 
-void findHomographyForCheckerboard(const Mat& calibrationImage, const Size& patternSize, Mat& outMatrix)
+void findHomographyForCheckerboard(const Mat& calibrationImage, const Size& patternSize, Mat& outMatrix, int scale, const Point2f& Origin)
 {
-	vector<vector<Point3f>> worldCalibrationPoints = { vector<Point3f>() };
-	worldCalibrationPoints[0].reserve(patternSize.width * patternSize.height);
-	for (int j = 0; j < patternSize.height; j++)
+	vector<Point3f> worldCalibrationPoints = vector<Point3f>() ;
+	worldCalibrationPoints.reserve(patternSize.width * patternSize.height);
+	for (float j = 0; j < patternSize.height; j++)
 	{
-		for (int i = 0; i < patternSize.width; i++)
+		for (float i = 0; i < patternSize.width; i++)
 		{
-			worldCalibrationPoints[0].emplace_back(i, j, 0);
+			worldCalibrationPoints.emplace_back((i - Origin.x) * scale, (j - Origin.y) * scale, 0);
 		}
 	}
 
 	vector<Point2f> imagePoints = vector<Point2f>();
 	bool bFoundCorners = findChessboardCorners(calibrationImage, patternSize, imagePoints);
 
+	/*
 	Mat cameraMatrix = Mat::eye(Size(3, 3), CV_64F);
 	Mat distCoeffs = Mat::zeros(8, 1, CV_64F);
 	vector<Mat> rvecs;
@@ -34,6 +35,7 @@ void findHomographyForCheckerboard(const Mat& calibrationImage, const Size& patt
 		cameraMatrix, distCoeffs,
 		rvecs, tvecs,
 		newObjPoints);
+	*/
 
-	outMatrix = findHomography(imagePoints, worldCalibrationPoints[0]);
+	outMatrix = findHomography(imagePoints, worldCalibrationPoints);
 }
