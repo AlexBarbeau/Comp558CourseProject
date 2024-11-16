@@ -362,6 +362,5 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 
-# these have references to local files
-*.vcxproj
-*.vcxproj.filters
+!opencv/*
+!opencv/build/x64/**/*
