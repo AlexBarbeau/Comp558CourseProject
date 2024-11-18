@@ -20,7 +20,7 @@ void findHomographyForCheckerboard(const Mat& calibrationImage, const Size& patt
 	}
 
 	vector<Point2f> imagePoints = vector<Point2f>();
-	bool bFoundCorners = findChessboardCorners(calibrationImage, patternSize, imagePoints);
+	bool bFoundCorners = findChessboardCorners(calibrationImage, patternSize, imagePoints, CALIB_CB_ADAPTIVE_THRESH);
 
 	/*
 	Mat cameraMatrix = Mat::eye(Size(3, 3), CV_64F);

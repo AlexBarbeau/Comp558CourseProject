@@ -113,7 +113,7 @@
     </Link>
     <PostBuildEvent>
       <Command>xcopy .\opencv\build\x64\vc16\bin\opencv_world4100.dll $(SolutionDir)$(Platform)\$(Configuration)\  /y
-xcopy .\opencv\build\x64\vc16\bin\opencv_world4100d.dll $(SolutionDir)$(Platform)\$(Configuration)\  /y</Command>
+xcopy .\opencv\build\x64\vc16\bin\opencv_videoio_ffmpeg4100_64.dll $(SolutionDir)$(Platform)\$(Configuration)\  /y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -134,7 +134,8 @@ xcopy .\opencv\build\x64\vc16\bin\opencv_world4100d.dll $(SolutionDir)$(Platform
       <AdditionalDependencies>.\opencv\build\x64\vc16\lib\*.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy .\opencv\build\x64\vc16\bin\opencv_world4100.dll $(SolutionDir)$(Platform)\$(Configuration)\  /y</Command>
+      <Command>xcopy .\opencv\build\x64\vc16\bin\opencv_world4100.dll $(SolutionDir)$(Platform)\$(Configuration)\  /y
+xcopy .\opencv\build\x64\vc16\bin\opencv_videoio_ffmpeg4100_64.dll $(SolutionDir)$(Platform)\$(Configuration)\  /y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
