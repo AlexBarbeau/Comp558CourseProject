@@ -2,6 +2,7 @@
 
 #include "Calibration.h"
 #include "LightPointCalculation.h"
+#include "StabilizeSequence.h"
 #include <opencv2/opencv.hpp>
 #include <opencv2/calib3d/calib3d.hpp>
 #include <vector>
@@ -51,12 +52,10 @@ int main() {
 	waitKey(0);
 	*/
 
-	namedWindow("Video", WINDOW_NORMAL);
-
 	const unsigned int maxFrames = 90;
 
 	vector<Mat> sequence;
-	VideoCapture videoCapture = VideoCapture("C:/Users/alex/Documents/Comp558CourseProject/images/robot/video.avi");
+	VideoCapture videoCapture = VideoCapture("./images/robot/video.avi");
 	
 	while (videoCapture.isOpened() && sequence.size() < maxFrames)
 	{
@@ -64,16 +63,43 @@ int main() {
 		{
 			break;
 		}
+
+		Mat frame;
+		videoCapture.retrieve(frame);
 		sequence.emplace_back();
-		videoCapture.retrieve(sequence.back());
+		cvtColor(frame, sequence.back(), COLOR_BGR2GRAY);
 	}
 
+	Mat minValue = 255 * Mat::ones(Size(sequence[0].cols, sequence[0].rows), CV_8U);
+	Mat maxValue = Mat::zeros(Size(sequence[0].cols, sequence[0].rows), CV_8U);
+
+	namedWindow("Video", WINDOW_NORMAL);
+	namedWindow("Min", WINDOW_NORMAL);
+	namedWindow("Max", WINDOW_NORMAL);
+
 	int i = 0;
-	while (i < sequence.size()) 
+	for (const Mat& frame : sequence)
 	{
-		imshow("Video", sequence[i]);
-		waitKey(0);
+		maxValue = max(maxValue, frame);
+		minValue = min(minValue, frame);
+
+		imshow("Video", frame);
+		imshow("Min", minValue);
+		imshow("Max", maxValue);
+		// waitKey(0);
 		i++;
+	}
+
+	for (const Mat& frame : sequence)
+	{
+		Mat differenceImage;
+		absdiff(maxValue, frame, differenceImage);
+		imshow("Video", differenceImage);
+
+		Mat shadowMask;
+		threshold(differenceImage, shadowMask, 70, 255, CV_8U);
+		imshow("Video", shadowMask);
+		waitKey(0);
 	}
 
 	return 0;
