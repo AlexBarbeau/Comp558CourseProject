@@ -13,7 +13,6 @@ using namespace std;
 const Size calibrationPatternSize = Size(6, 9);
 
 int main() {
-	/*
 	Mat calibrationImage = imread("./images/constructed/checkerboard.png", 1);
 	Mat homography;
 	findHomographyForCheckerboard(calibrationImage, calibrationPatternSize, homography);
@@ -31,6 +30,29 @@ int main() {
 	imshow("Calibration Image", calibrationImage);
 	waitKey(0);
 
+	// Precompute expected world coordinates of each pixel when projected onto the plane
+	Mat imageCoordinates = Mat::zeros(Size(calibrationImage.cols, calibrationImage.rows), CV_32FC2);
+	for (int j = 0; j < imageCoordinates.cols; j++)
+	{
+		for (int i = 0; i < imageCoordinates.rows; i++)
+		{
+			imageCoordinates.at<Point2f>(Point2i(j, i)) = Point2f(j, i);
+		}
+	}
+
+	Mat planarCoordinates;
+	perspectiveTransform(imageCoordinates, planarCoordinates, homography);
+
+	// add Z-axis
+	Mat worldCoordinates;
+	merge(
+		vector<Mat>({ Mat::zeros(Size(calibrationImage.cols, calibrationImage.rows), CV_32F), planarCoordinates }), 
+		worldCoordinates
+	);
+	imshow("Calibration Image", worldCoordinates / 6);
+	waitKey(0);
+
+	/*
 	Mat shadowImage1 = imread("./images/constructed/shadow1.png", 1);
 	Mat shadowImage2 = imread("./images/constructed/shadow2.png", 1);
 	LightPointCalculation l = LightPointCalculation();
@@ -56,7 +78,7 @@ int main() {
 	Mat shadowless;
 	Mat shadowed;
 	vector<Mat> shadowMasks;
-	bool bSuccess = isolateShadows(video, shadowless, shadowed, shadowMasks);
+	bool bFoundShadows = isolateShadows(video, shadowless, shadowed, shadowMasks);
 
 	return 0;
 }
