@@ -14,7 +14,7 @@ const Size calibrationPatternSize = Size(6, 9);
 
 int main() {
 	/*
-	Mat calibrationImage = imread("./images/robot/checkerboard.jpg", 1);
+	Mat calibrationImage = imread("./images/constructed/checkerboard.png", 1);
 	Mat homography;
 	findHomographyForCheckerboard(calibrationImage, calibrationPatternSize, homography);
 
@@ -31,8 +31,8 @@ int main() {
 	imshow("Calibration Image", calibrationImage);
 	waitKey(0);
 
-	Mat shadowImage1 = imread("./images/robot/shadow1.jpg", 1);
-	Mat shadowImage2 = imread("./images/robot/shadow2.jpg", 1);
+	Mat shadowImage1 = imread("./images/constructed/shadow1.png", 1);
+	Mat shadowImage2 = imread("./images/constructed/shadow2.png", 1);
 	LightPointCalculation l = LightPointCalculation();
 	Point3d lightPosition = l.findLightPosition(homography, shadowImage1, 5, shadowImage2, 5);
 
@@ -52,55 +52,11 @@ int main() {
 	waitKey(0);
 	*/
 
-	const unsigned int maxFrames = 90;
-
-	vector<Mat> sequence;
-	VideoCapture videoCapture = VideoCapture("./images/robot/video.avi");
-	
-	while (videoCapture.isOpened() && sequence.size() < maxFrames)
-	{
-		if (!videoCapture.grab()) 
-		{
-			break;
-		}
-
-		Mat frame;
-		videoCapture.retrieve(frame);
-		sequence.emplace_back();
-		cvtColor(frame, sequence.back(), COLOR_BGR2GRAY);
-	}
-
-	Mat minValue = 255 * Mat::ones(Size(sequence[0].cols, sequence[0].rows), CV_8U);
-	Mat maxValue = Mat::zeros(Size(sequence[0].cols, sequence[0].rows), CV_8U);
-
-	namedWindow("Video", WINDOW_NORMAL);
-	namedWindow("Min", WINDOW_NORMAL);
-	namedWindow("Max", WINDOW_NORMAL);
-
-	int i = 0;
-	for (const Mat& frame : sequence)
-	{
-		maxValue = max(maxValue, frame);
-		minValue = min(minValue, frame);
-
-		imshow("Video", frame);
-		imshow("Min", minValue);
-		imshow("Max", maxValue);
-		// waitKey(0);
-		i++;
-	}
-
-	for (const Mat& frame : sequence)
-	{
-		Mat differenceImage;
-		absdiff(maxValue, frame, differenceImage);
-		imshow("Video", differenceImage);
-
-		Mat shadowMask;
-		threshold(differenceImage, shadowMask, 70, 255, CV_8U);
-		imshow("Video", shadowMask);
-		waitKey(0);
-	}
+	VideoCapture video = VideoCapture("./images/constructed/sequence/sequence%d.png");
+	Mat shadowless;
+	Mat shadowed;
+	vector<Mat> shadowMasks;
+	bool bSuccess = isolateShadows(video, shadowless, shadowed, shadowMasks);
 
 	return 0;
 }
