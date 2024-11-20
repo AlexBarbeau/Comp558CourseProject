@@ -52,11 +52,9 @@ int main() {
 	imshow("Calibration Image", worldCoordinates / 6);
 	waitKey(0);
 
-	/*
 	Mat shadowImage1 = imread("./images/constructed/shadow1.png", 1);
 	Mat shadowImage2 = imread("./images/constructed/shadow2.png", 1);
-	LightPointCalculation l = LightPointCalculation();
-	Point3d lightPosition = l.findLightPosition(homography, shadowImage1, 5, shadowImage2, 5);
+	Point3d lightPosition = findLightPosition(homography, shadowImage1, 5, shadowImage2, 5);
 
 	vector<Point2d> lightXY = { Point2d(lightPosition.x, lightPosition.y) };
 	vector<Point2d> lightImagePos;
@@ -72,13 +70,14 @@ int main() {
 	cout << lightPosition;
 	imshow("Calibration Image", calibrationImage);
 	waitKey(0);
-	*/
 
 	VideoCapture video = VideoCapture("./images/constructed/sequence/sequence%d.png");
 	Mat shadowless;
 	Mat shadowed;
 	vector<Mat> shadowMasks;
 	bool bFoundShadows = isolateShadows(video, shadowless, shadowed, shadowMasks);
+
+
 
 	return 0;
 }
