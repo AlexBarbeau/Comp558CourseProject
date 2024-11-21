@@ -90,7 +90,7 @@ bool findShadowTime(const vector<Mat>& shadowMaskSequence, Mat& outShadowTime)
 	}
 
 	Size imageSize = Size(shadowMaskSequence[0].cols, shadowMaskSequence[0].rows);
-	outShadowTime = Mat::zeros(imageSize, CV_8U);
+	outShadowTime = Mat::zeros(imageSize, CV_32F);
 	for (unsigned char t = 0; t < shadowMaskSequence.size(); t++) 
 	{
 		for (int u = 0; u < imageSize.width; u++)
@@ -102,7 +102,7 @@ bool findShadowTime(const vector<Mat>& shadowMaskSequence, Mat& outShadowTime)
 				if (shadowMaskSequence[t].at<unsigned char>(pixel) > 0)
 				{
 					bFoundEdge = true;
-					outShadowTime.at<unsigned char>(pixel) = t;
+					outShadowTime.at<float>(pixel) = t;
 					break;
 				}
 			}

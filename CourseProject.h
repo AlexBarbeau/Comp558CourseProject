@@ -85,7 +85,7 @@ int main() {
 	Mat shadowTime;
 	findShadowTime(shadowMasks, shadowTime);
 	namedWindow("Shadow Time", WINDOW_NORMAL);
-	imshow("Shadow Time", shadowTime);
+	imshow("Shadow Time", shadowTime / shadowMasks.size());
 	waitKey(0);
 
 	return 0;
