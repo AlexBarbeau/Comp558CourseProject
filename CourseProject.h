@@ -3,6 +3,7 @@
 #include "Calibration.h"
 #include "LightPointCalculation.h"
 #include "StabilizeSequence.h"
+#include "ShadowAnalysis.h"
 #include <opencv2/opencv.hpp>
 #include <opencv2/calib3d/calib3d.hpp>
 #include <vector>
@@ -52,6 +53,9 @@ int main() {
 	imshow("Calibration Image", worldCoordinates / 6);
 	waitKey(0);
 
+	destroyWindow("Calibration Image");
+
+	/*
 	Mat shadowImage1 = imread("./images/constructed/shadow1.png", 1);
 	Mat shadowImage2 = imread("./images/constructed/shadow2.png", 1);
 	Point3d lightPosition = findLightPosition(homography, shadowImage1, 5, shadowImage2, 5);
@@ -70,6 +74,7 @@ int main() {
 	cout << lightPosition;
 	imshow("Calibration Image", calibrationImage);
 	waitKey(0);
+	*/
 
 	VideoCapture video = VideoCapture("./images/constructed/sequence/sequence%d.png");
 	Mat shadowless;
@@ -77,7 +82,11 @@ int main() {
 	vector<Mat> shadowMasks;
 	bool bFoundShadows = isolateShadows(video, shadowless, shadowed, shadowMasks);
 
-
+	Mat shadowTime;
+	findShadowTime(shadowMasks, shadowTime);
+	namedWindow("Shadow Time", WINDOW_NORMAL);
+	imshow("Shadow Time", shadowTime);
+	waitKey(0);
 
 	return 0;
 }
