@@ -72,6 +72,8 @@ bool isolateShadows(VideoCapture& videoCapture, Mat& outShadowless, Mat& outShad
 		}
 	} while (keyPress != 'e');
 
+	destroyWindow("Threshold Preview");
+
 	outShadowMasks.reserve(differenceSequence.size());
 	for (const Mat& frame : differenceSequence)
 	{
