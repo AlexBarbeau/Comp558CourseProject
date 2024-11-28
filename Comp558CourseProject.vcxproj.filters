@@ -27,6 +27,12 @@
     <ClInclude Include="StabilizeSequence.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ShadowAnalysis.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ShadowPlane.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Calibration.cpp">
@@ -39,6 +45,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="StabilizeSequence.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ShadowAnalysis.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ShadowPlane.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

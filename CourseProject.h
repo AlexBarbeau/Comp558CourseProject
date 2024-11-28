@@ -4,6 +4,7 @@
 #include "LightPointCalculation.h"
 #include "StabilizeSequence.h"
 #include "ShadowAnalysis.h"
+#include "ShadowPlane.h"
 #include <opencv2/opencv.hpp>
 #include <opencv2/calib3d/calib3d.hpp>
 #include <vector>
@@ -55,26 +56,26 @@ int main() {
 
 	destroyWindow("Calibration Image");
 
-	/*
+	
 	Mat shadowImage1 = imread("./images/constructed/shadow1.png", 1);
 	Mat shadowImage2 = imread("./images/constructed/shadow2.png", 1);
 	Point3d lightPosition = findLightPosition(homography, shadowImage1, 5, shadowImage2, 5);
 
-	vector<Point2d> lightXY = { Point2d(lightPosition.x, lightPosition.y) };
-	vector<Point2d> lightImagePos;
-	perspectiveTransform(lightXY, lightImagePos, invHomography);
+	//vector<Point2d> lightXY = { Point2d(lightPosition.x, lightPosition.y) };
+	//vector<Point2d> lightImagePos;
+	//perspectiveTransform(lightXY, lightImagePos, invHomography);
 
-	const Scalar lightColour = Scalar(0, 200, 255);
-	circle(calibrationImage, lightImagePos[0], 20, lightColour, 10);
-	putText(
-		calibrationImage, format("Height: %.2f", lightPosition.z), lightImagePos[0], 
-		FONT_HERSHEY_SIMPLEX, 2, lightColour * 0.8, 4
-	);
+	//const Scalar lightColour = Scalar(0, 200, 255);
+	//circle(calibrationImage, lightImagePos[0], 20, lightColour, 10);
+	//putText(
+	//	calibrationImage, format("Height: %.2f", lightPosition.z), lightImagePos[0], 
+	//	FONT_HERSHEY_SIMPLEX, 2, lightColour * 0.8, 4
+	//);
 
 	cout << lightPosition;
-	imshow("Calibration Image", calibrationImage);
-	waitKey(0);
-	*/
+	//imshow("Calibration Image", calibrationImage);
+	//waitKey(0);
+	
 
 	VideoCapture video = VideoCapture("./images/constructed/sequence/sequence%d.png");
 	Mat shadowless;
@@ -85,8 +86,12 @@ int main() {
 	Mat shadowTime;
 	findShadowTime(shadowMasks, shadowTime);
 	namedWindow("Shadow Time", WINDOW_NORMAL);
-	imshow("Shadow Time", shadowTime / shadowMasks.size());
+	shadowTime = shadowTime / shadowMasks.size();
+	imshow("Shadow Time", shadowTime);
 	waitKey(0);
+
+	vector<Mat> shadowPlaneOutput;
+	calculateShadowPlane(shadowTime, shadowPlaneOutput, lightPosition, homography);
 
 	return 0;
 }
