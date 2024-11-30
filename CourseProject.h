@@ -47,12 +47,12 @@ int main() {
 	perspectiveTransform(imageCoordinates, planarCoordinates, homography);
 
 	// add Z-axis
-	Mat worldCoordinates;
+	Mat worldPlaneCoordinates;
 	merge(
 		vector<Mat>({ planarCoordinates, Mat::zeros(Size(calibrationImage.cols, calibrationImage.rows), CV_32F) }),
-		worldCoordinates
+		worldPlaneCoordinates
 	);
-	imshow("Calibration Image", worldCoordinates / 6);
+	imshow("Calibration Image", worldPlaneCoordinates / 6);
 	waitKey(0);
 
 	destroyWindow("Calibration Image");
@@ -91,7 +91,18 @@ int main() {
 	waitKey(0);
 
 	vector<Point3f> shadowPlaneNormals;
-	calculateShadowPlane(shadowTime, lightPosition, homography, worldCoordinates, shadowPlaneNormals);
+	vector<float> planeTimes;
+	calculateShadowPlane(shadowTime, lightPosition, homography, worldPlaneCoordinates, shadowPlaneNormals, planeTimes);
+
+	Point3f cameraPosition = Point3f(5, -9, 9);
+
+	Mat recoveredCoordinates;
+	Mat coordinateMask;
+	recover3DPoints(shadowTime, lightPosition, shadowPlaneNormals, planeTimes, cameraPosition, worldPlaneCoordinates, recoveredCoordinates, coordinateMask);
+
+	namedWindow("Recovered Geometry", WINDOW_NORMAL);
+	imshow("Recovered Geometry", recoveredCoordinates);
+	waitKey(0);
 
 	return 0;
 }

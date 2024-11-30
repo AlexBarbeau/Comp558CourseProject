@@ -139,6 +139,7 @@ xcopy .\opencv\build\x64\vc16\bin\opencv_videoio_ffmpeg4100_64.dll $(SolutionDir
     <ClInclude Include="Calibration.h" />
     <ClInclude Include="CourseProject.h" />
     <ClInclude Include="LightPointCalculation.h" />
+    <ClInclude Include="Recover3DPoints.h" />
     <ClInclude Include="ShadowAnalysis.h" />
     <ClInclude Include="ShadowPlane.h" />
     <ClInclude Include="StabilizeSequence.h" />
@@ -147,6 +148,7 @@ xcopy .\opencv\build\x64\vc16\bin\opencv_videoio_ffmpeg4100_64.dll $(SolutionDir
     <ClCompile Include="Calibration.cpp" />
     <ClCompile Include="CourseProject.cpp" />
     <ClCompile Include="LightPointCalculation.cpp" />
+    <ClCompile Include="Recover3DPoints.cpp" />
     <ClCompile Include="ShadowAnalysis.cpp" />
     <ClCompile Include="ShadowPlane.cpp" />
     <ClCompile Include="StabilizeSequence.cpp" />

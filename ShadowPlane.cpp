@@ -4,16 +4,17 @@ using namespace cv;
 using namespace std;
 
 struct ShadowEdge {
-	ShadowEdge(Point2f pixel1, Point2f pixel2) : start(pixel1), end(pixel2) {}
+	ShadowEdge(Point2f pixel1, Point2f pixel2, float t) : start(pixel1), end(pixel2), time(t) {}
 
 	Point2f start;
 	Point2f end;
+	float time;
 };
 
-void calculateShadowPlane(const Mat& shadowTime, Point3f lightPoint, const Mat& homography, const Mat& worldCoordinates, vector<Point3f>& outNormals)
+void calculateShadowPlane(const Mat& shadowTime, Point3f lightPoint, const Mat& homography, const Mat& worldCoordinates, vector<Point3f>& outNormals, vector<float>& outPlaneTimes)
 {
-	const int track1Pos = 20;
-	const int track2Pos = 1900;
+	const int track1Pos = 70;
+	const int track2Pos = 1850;
 
 	Mat track1 = shadowTime.col(track1Pos);
 	Mat track2 = shadowTime.col(track2Pos);
@@ -41,9 +42,10 @@ void calculateShadowPlane(const Mat& shadowTime, Point3f lightPoint, const Mat& 
 	{
 		for (Point2f& point2 : track2Intersects)
 		{
-			if (abs(shadowTime.at<float>(point1) - shadowTime.at<float>(point2)) < 0.0001)
+			float time = shadowTime.at<float>(point1);
+			if (abs(time - shadowTime.at<float>(point2)) < 0.0001)
 			{
-				shadowEdges.emplace_back(point1, point2);
+				shadowEdges.emplace_back(point1, point2, time);
 
 				cout << shadowTime.at<float>(point1) << '\n';
 				cout << shadowTime.at<float>(point2) << '\n';
@@ -75,6 +77,7 @@ void calculateShadowPlane(const Mat& shadowTime, Point3f lightPoint, const Mat& 
 		normal /= sqrt(normal.dot(normal));
 
 		outNormals.push_back(normal);
+		outPlaneTimes.push_back(edge.time);
 
 		cout << "normal: " << normal << endl;
 	}
