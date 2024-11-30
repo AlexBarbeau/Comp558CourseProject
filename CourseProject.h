@@ -48,7 +48,7 @@ int main() {
 	// add Z-axis
 	Mat worldCoordinates;
 	merge(
-		vector<Mat>({ Mat::zeros(Size(calibrationImage.cols, calibrationImage.rows), CV_32F), planarCoordinates }), 
+		vector<Mat>({ planarCoordinates, Mat::zeros(Size(calibrationImage.cols, calibrationImage.rows), CV_32F) }),
 		worldCoordinates
 	);
 	imshow("Calibration Image", worldCoordinates / 6);
@@ -86,12 +86,11 @@ int main() {
 	Mat shadowTime;
 	findShadowTime(shadowMasks, shadowTime);
 	namedWindow("Shadow Time", WINDOW_NORMAL);
-	shadowTime = shadowTime / shadowMasks.size();
 	imshow("Shadow Time", shadowTime);
 	waitKey(0);
 
-	vector<Mat> shadowPlaneOutput;
-	calculateShadowPlane(shadowTime, shadowPlaneOutput, lightPosition, homography);
+	vector<Point3f> shadowPlaneNormals;
+	calculateShadowPlane(shadowTime, lightPosition, homography, worldCoordinates, shadowPlaneNormals);
 
 	return 0;
 }

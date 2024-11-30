@@ -6,4 +6,4 @@
 using namespace std;
 using namespace cv;
 
-vector<Point3f> calculateShadowPlane(Mat& shadowTime, vector<Mat>& outPlanes, Point3f point, Mat invHomography);
+void calculateShadowPlane(const Mat& shadowTime, Point3f point, const Mat& homography, const Mat& worldCoorddinates, vector<Point3f>& outNormals);

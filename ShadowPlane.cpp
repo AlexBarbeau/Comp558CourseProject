@@ -1,72 +1,88 @@
 #include "ShadowPlane.h"
 
-vector<Point3f> calculateShadowPlane(Mat& shadowTime, vector<Mat>& outPlanes, Point3f lightPoint, Mat homography)
+using namespace cv;
+using namespace std;
+
+struct ShadowEdge {
+	ShadowEdge(Point2f pixel1, Point2f pixel2) : start(pixel1), end(pixel2) {}
+
+	Point2f start;
+	Point2f end;
+};
+
+void calculateShadowPlane(const Mat& shadowTime, Point3f lightPoint, const Mat& homography, const Mat& worldCoordinates, vector<Point3f>& outNormals)
 {
-	Mat processImg = shadowTime.clone();
-	processImg.setTo(255, shadowTime != 0);
+	const int track1Pos = 20;
+	const int track2Pos = 1900;
 
-	std::vector<cv::Point> points;
-	cv::findNonZero(processImg == 255, points); // Finds all points where intensity is 255
+	Mat track1 = shadowTime.col(track1Pos);
+	Mat track2 = shadowTime.col(track2Pos);
 
-	int line_1 = 1500;
-	int line_2 = 1800;
+	vector<Point2f> track1Intersects;
+	vector<Point2f> track2Intersects;
 
-	vector<Point2f> line1Intersects;
-	vector<Point2f> line2Intersects;
+	findNonZero(track1, track1Intersects);
+	findNonZero(track2, track2Intersects);
 
-	cout << processImg.size().height << endl;
-	waitKey();
+	for (Point2f& intersect : track1Intersects) {
+		intersect.x = track1Pos;
+	}
 
-	for (Point p : points)
+	for (Point2f& intersect : track2Intersects) {
+		intersect.x = track2Pos;
+	}
+
+	cout << shadowTime.size().height << endl;
+
+	vector<ShadowEdge> shadowEdges;
+	shadowEdges.reserve(min(track1Intersects.size(), track2Intersects.size()));
+
+	for (Point2f& point1 : track1Intersects) 
 	{
-		if (p.x == line_1)
+		for (Point2f& point2 : track2Intersects)
 		{
-			line1Intersects.push_back(p);
-		}
+			if (abs(shadowTime.at<float>(point1) - shadowTime.at<float>(point2)) < 0.0001)
+			{
+				shadowEdges.emplace_back(point1, point2);
 
-		if (p.x == line_2)
-		{
-			line2Intersects.push_back(p);
+				cout << shadowTime.at<float>(point1) << '\n';
+				cout << shadowTime.at<float>(point2) << '\n';
+				cout << '\n' << '\n';
+
+				break;
+			}
 		}
 	}
 
-	int PlaneCount = min(line1Intersects.size(), line2Intersects.size());
+	Mat edgeImage = Mat::zeros(Size(shadowTime.cols, shadowTime.rows), shadowTime.type());
 
-	vector<Point2f> line1PointsWorld; //this is all the points in first track
-	vector<Point2f> line2PointsWorld; // this is all the points in second track. NOTICE: line1PointsWorld size and line2PointsWorld size may be different.
-
-	perspectiveTransform(line1Intersects, line1PointsWorld, homography);
-	perspectiveTransform(line2Intersects, line2PointsWorld, homography);
-
-	cout << PlaneCount << endl;
-
-	vector<Point3f> track1Vectors; //this is all the vector from light point to the intersect of first track
-	vector<Point3f> track2Vectors; //this is all the vector from light point to the intersect of second track
-
-	vector<Point3f> normals;
-
-
-	for (int i = 0; i < PlaneCount; i++)
+	for (ShadowEdge edge : shadowEdges)
 	{
-		Point3f p1(line1PointsWorld[i].x, line1PointsWorld[i].y, 0);
-		Point3f p2(line2PointsWorld[i].x, line2PointsWorld[i].y, 0);
+		line(edgeImage, edge.start, edge.end, Scalar(255, 255, 255), 2);
+
+		Point3f p1 = worldCoordinates.at<Point3f>(edge.start);
+		Point3f p2 = worldCoordinates.at<Point3f>(edge.end);
 		
 		Point3f v1 = p1 - lightPoint;
 		Point3f v2 = p2 - lightPoint;
 
-		track1Vectors.push_back(v1);
-		track2Vectors.push_back(v2);
-	
 		Point3f normal(
 			v1.y * v2.z - v1.z * v2.y,  // x component
 			v1.z * v2.x - v1.x * v2.z,  // y component
 			v1.x * v2.y - v1.y * v2.x   // z component
 		);
 
-		normals.push_back(normal);
+		normal /= sqrt(normal.dot(normal));
 
-		cout << "vector 1: " << v1 << "vector 2: " << v2 << "vector 3: " << normal << endl;
+		outNormals.push_back(normal);
+
+		cout << "normal: " << normal << endl;
 	}
 
-	return normals;
+	Mat previewImage;
+	merge(vector<Mat>{ shadowTime, shadowTime, edgeImage }, previewImage);
+
+	namedWindow("Shadow Plane Preview", WINDOW_NORMAL);
+	imshow("Shadow Plane Preview", previewImage);
+	waitKey(0);
 }
