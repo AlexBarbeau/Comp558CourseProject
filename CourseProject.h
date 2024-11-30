@@ -5,6 +5,7 @@
 #include "StabilizeSequence.h"
 #include "ShadowAnalysis.h"
 #include "ShadowPlane.h"
+#include "Recover3DPoints.h"
 #include <opencv2/opencv.hpp>
 #include <opencv2/calib3d/calib3d.hpp>
 #include <vector>
@@ -15,7 +16,7 @@ using namespace std;
 const Size calibrationPatternSize = Size(6, 9);
 
 int main() {
-	Mat calibrationImage = imread("./images/constructed/checkerboard.png", 1);
+	Mat calibrationImage = imread("./images/constructed2/checkerboard.png", 1);
 	Mat homography;
 	findHomographyForCheckerboard(calibrationImage, calibrationPatternSize, homography);
 
@@ -25,7 +26,7 @@ int main() {
 	Mat invHomography = homography.inv();
 	perspectiveTransform(worldBasis, imageBasis, invHomography);
 
-	arrowedLine(calibrationImage, imageBasis[0], imageBasis[1], Scalar(0, 0, 255), 8);
+	arrowedLine(calibrationImage, imageBasis[0], imageBasis[1], Scalar(255, 0, 0), 8);
 	arrowedLine(calibrationImage, imageBasis[0], imageBasis[2], Scalar(0, 255, 0), 8);
 
 	namedWindow("Calibration Image", WINDOW_NORMAL);
@@ -57,8 +58,8 @@ int main() {
 	destroyWindow("Calibration Image");
 
 	
-	Mat shadowImage1 = imread("./images/constructed/shadow1.png", 1);
-	Mat shadowImage2 = imread("./images/constructed/shadow2.png", 1);
+	Mat shadowImage1 = imread("./images/constructed2/shadow1.png", 1);
+	Mat shadowImage2 = imread("./images/constructed2/shadow2.png", 1);
 	Point3d lightPosition = findLightPosition(homography, shadowImage1, 5, shadowImage2, 5);
 
 	//vector<Point2d> lightXY = { Point2d(lightPosition.x, lightPosition.y) };
@@ -77,7 +78,7 @@ int main() {
 	//waitKey(0);
 	
 
-	VideoCapture video = VideoCapture("./images/constructed/sequence/sequence%d.png");
+	VideoCapture video = VideoCapture("./images/constructed2/sequence/sequence%d.png");
 	Mat shadowless;
 	Mat shadowed;
 	vector<Mat> shadowMasks;
