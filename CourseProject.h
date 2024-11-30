@@ -15,9 +15,17 @@ using namespace std;
 const Size calibrationPatternSize = Size(6, 9);
 
 int main() {
-	Mat calibrationImage = imread("./images/constructed/checkerboard.png", 1);
+	Mat anchorImage = imread("./images/constructed/anchor.png", 1);
 	Mat homography;
-	findHomographyForCheckerboard(calibrationImage, calibrationPatternSize, homography);
+
+	vector<Mat> calibrationImages = vector<Mat>({
+		anchorImage,
+		imread("./images/constructed/calibration1.png", 1),
+		imread("./images/constructed/calibration2.png", 1),
+		imread("./images/constructed/calibration3.png", 1)
+	});
+
+	findHomographyForCheckerboard(calibrationImages, calibrationPatternSize, homography, 1, Point2f(0,0));
 
 	vector<Point2f> worldBasis = { Point2f(0, 0), Point2f(1, 0), Point2f(0, 1) };
 	vector<Point2f> imageBasis{};
@@ -25,15 +33,15 @@ int main() {
 	Mat invHomography = homography.inv();
 	perspectiveTransform(worldBasis, imageBasis, invHomography);
 
-	arrowedLine(calibrationImage, imageBasis[0], imageBasis[1], Scalar(0, 0, 255), 8);
-	arrowedLine(calibrationImage, imageBasis[0], imageBasis[2], Scalar(0, 255, 0), 8);
+	arrowedLine(anchorImage, imageBasis[0], imageBasis[1], Scalar(0, 0, 255), 8);
+	arrowedLine(anchorImage, imageBasis[0], imageBasis[2], Scalar(0, 255, 0), 8);
 
 	namedWindow("Calibration Image", WINDOW_NORMAL);
-	imshow("Calibration Image", calibrationImage);
+	imshow("Calibration Image", anchorImage);
 	waitKey(0);
 
 	// Precompute expected world coordinates of each pixel when projected onto the plane
-	Mat imageCoordinates = Mat::zeros(Size(calibrationImage.cols, calibrationImage.rows), CV_32FC2);
+	Mat imageCoordinates = Mat::zeros(Size(anchorImage.cols, anchorImage.rows), CV_32FC2);
 	for (int j = 0; j < imageCoordinates.cols; j++)
 	{
 		for (int i = 0; i < imageCoordinates.rows; i++)
@@ -48,7 +56,7 @@ int main() {
 	// add Z-axis
 	Mat worldCoordinates;
 	merge(
-		vector<Mat>({ Mat::zeros(Size(calibrationImage.cols, calibrationImage.rows), CV_32F), planarCoordinates }), 
+		vector<Mat>({ Mat::zeros(Size(anchorImage.cols, anchorImage.rows), CV_32F), planarCoordinates }), 
 		worldCoordinates
 	);
 	imshow("Calibration Image", worldCoordinates / 6);
