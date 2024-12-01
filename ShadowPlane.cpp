@@ -13,8 +13,8 @@ struct ShadowEdge {
 
 void calculateShadowPlane(const Mat& shadowTime, Point3f lightPoint, const Mat& homography, const Mat& worldCoordinates, vector<Point3f>& outNormals, vector<float>& outPlaneTimes)
 {
-	const int track1Pos = 140;
-	const int track2Pos = 2500;
+	const int track1Pos = 50;
+	const int track2Pos = 1870;
 
 	Mat track1 = shadowTime.col(track1Pos);
 	Mat track2 = shadowTime.col(track2Pos);

@@ -39,6 +39,7 @@ bool isolateShadows(VideoCapture& videoCapture, Mat& outShadowless, Mat& outShad
 	}
 
 	namedWindow("Threshold Preview", WINDOW_KEEPRATIO);
+	namedWindow("Difference Preview", WINDOW_KEEPRATIO);
 
 	int i = differenceSequence.size() / 2;
 	int sigma = 2;
@@ -51,6 +52,7 @@ bool isolateShadows(VideoCapture& videoCapture, Mat& outShadowless, Mat& outShad
 		Mat shadowMask;
 		threshold(blurredDifference, shadowMask, thresh, 255, CV_8U);
 
+		imshow("Difference Preview", blurredDifference);
 		imshow("Threshold Preview", shadowMask);
 		keyPress = waitKey(0);
 
