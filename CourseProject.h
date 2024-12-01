@@ -109,11 +109,19 @@ int main() {
 	findNonZero(coordinateMask, recoveredPoints);
 	ofstream pointCloudFile;
 	pointCloudFile.open("PointCloud.csv");
+	ofstream colourFile;
+	colourFile.open("PointCloudColours.csv");
 	for (Point2i pointIndex : recoveredPoints) 
 	{
 		Point3f position = recoveredCoordinates.at<Point3f>(pointIndex);
 		pointCloudFile << position.x << ',' << position.y << ',' << position.z << endl;
+
+		unsigned char* colour = &shadowless.at<unsigned char>(pointIndex);
+		colourFile << (int) colour[2] << ',' << (int) colour[1] << ',' << (int) colour[0] << endl;
 	}
+
+	pointCloudFile.close();
+	colourFile.close();
 
 	cout << "saved PointCloud.csv";
 
