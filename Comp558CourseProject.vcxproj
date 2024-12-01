@@ -142,7 +142,6 @@ xcopy .\opencv\build\x64\vc16\bin\opencv_videoio_ffmpeg4100_64.dll $(SolutionDir
     <ClInclude Include="Recover3DPoints.h" />
     <ClInclude Include="ShadowAnalysis.h" />
     <ClInclude Include="ShadowPlane.h" />
-    <ClInclude Include="StabilizeSequence.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Calibration.cpp" />
@@ -151,7 +150,6 @@ xcopy .\opencv\build\x64\vc16\bin\opencv_videoio_ffmpeg4100_64.dll $(SolutionDir
     <ClCompile Include="Recover3DPoints.cpp" />
     <ClCompile Include="ShadowAnalysis.cpp" />
     <ClCompile Include="ShadowPlane.cpp" />
-    <ClCompile Include="StabilizeSequence.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

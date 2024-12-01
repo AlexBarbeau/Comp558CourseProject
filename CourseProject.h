@@ -8,6 +8,8 @@
 #include "Recover3DPoints.h"
 #include <opencv2/opencv.hpp>
 #include <opencv2/calib3d/calib3d.hpp>
+#include <iostream>
+#include <fstream>
 #include <vector>
 
 using namespace cv;
@@ -16,7 +18,7 @@ using namespace std;
 const Size calibrationPatternSize = Size(6, 9);
 
 int main() {
-	Mat calibrationImage = imread("./images/constructed2/checkerboard.png", 1);
+	Mat calibrationImage = imread("./images/controller/checkerboard.jpg", 1);
 	Mat homography;
 	findHomographyForCheckerboard(calibrationImage, calibrationPatternSize, homography);
 
@@ -58,9 +60,9 @@ int main() {
 	destroyWindow("Calibration Image");
 
 	
-	Mat shadowImage1 = imread("./images/constructed2/shadow1.png", 1);
-	Mat shadowImage2 = imread("./images/constructed2/shadow2.png", 1);
-	Point3d lightPosition = findLightPosition(homography, shadowImage1, 5, shadowImage2, 5);
+	Mat shadowImage1 = imread("./images/controller/shadow1.jpg", 1);
+	Mat shadowImage2 = imread("./images/controller/shadow2.jpg", 1);
+	Point3d lightPosition = findLightPosition(homography, shadowImage1, 9.5, shadowImage2, 9.5);
 
 	//vector<Point2d> lightXY = { Point2d(lightPosition.x, lightPosition.y) };
 	//vector<Point2d> lightImagePos;
@@ -78,7 +80,7 @@ int main() {
 	//waitKey(0);
 	
 
-	VideoCapture video = VideoCapture("./images/constructed2/sequence/sequence%d.png");
+	VideoCapture video = VideoCapture("./images/controller/sequence/sequence%d.jpg");
 	Mat shadowless;
 	Mat shadowed;
 	vector<Mat> shadowMasks;
@@ -94,7 +96,7 @@ int main() {
 	vector<float> planeTimes;
 	calculateShadowPlane(shadowTime, lightPosition, homography, worldPlaneCoordinates, shadowPlaneNormals, planeTimes);
 
-	Point3f cameraPosition = Point3f(5, -9, 9);
+	Point3f cameraPosition = Point3f(-15.5, 0, 23);
 
 	Mat recoveredCoordinates;
 	Mat coordinateMask;
@@ -102,6 +104,19 @@ int main() {
 
 	namedWindow("Recovered Geometry", WINDOW_NORMAL);
 	imshow("Recovered Geometry", recoveredCoordinates);
+
+	vector<Point2i> recoveredPoints;
+	findNonZero(coordinateMask, recoveredPoints);
+	ofstream pointCloudFile;
+	pointCloudFile.open("PointCloud.csv");
+	for (Point2i pointIndex : recoveredPoints) 
+	{
+		Point3f position = recoveredCoordinates.at<Point3f>(pointIndex);
+		pointCloudFile << position.x << ',' << position.y << ',' << position.z << endl;
+	}
+
+	cout << "saved PointCloud.csv";
+
 	waitKey(0);
 
 	return 0;

@@ -14,7 +14,7 @@ struct ShadowEdge {
 void calculateShadowPlane(const Mat& shadowTime, Point3f lightPoint, const Mat& homography, const Mat& worldCoordinates, vector<Point3f>& outNormals, vector<float>& outPlaneTimes)
 {
 	const int track1Pos = 70;
-	const int track2Pos = 1850;
+	const int track2Pos = 2500;
 
 	Mat track1 = shadowTime.col(track1Pos);
 	Mat track2 = shadowTime.col(track2Pos);
@@ -33,8 +33,6 @@ void calculateShadowPlane(const Mat& shadowTime, Point3f lightPoint, const Mat& 
 		intersect.x = track2Pos;
 	}
 
-	cout << shadowTime.size().height << endl;
-
 	vector<ShadowEdge> shadowEdges;
 	shadowEdges.reserve(min(track1Intersects.size(), track2Intersects.size()));
 
@@ -46,11 +44,6 @@ void calculateShadowPlane(const Mat& shadowTime, Point3f lightPoint, const Mat& 
 			if (abs(time - shadowTime.at<float>(point2)) < 0.0001)
 			{
 				shadowEdges.emplace_back(point1, point2, time);
-
-				cout << shadowTime.at<float>(point1) << '\n';
-				cout << shadowTime.at<float>(point2) << '\n';
-				cout << '\n' << '\n';
-
 				break;
 			}
 		}
@@ -78,8 +71,6 @@ void calculateShadowPlane(const Mat& shadowTime, Point3f lightPoint, const Mat& 
 
 		outNormals.push_back(normal);
 		outPlaneTimes.push_back(edge.time);
-
-		cout << "normal: " << normal << endl;
 	}
 
 	Mat previewImage;

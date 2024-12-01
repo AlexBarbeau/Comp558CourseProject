@@ -41,7 +41,7 @@ bool isolateShadows(VideoCapture& videoCapture, Mat& outShadowless, Mat& outShad
 	namedWindow("Threshold Preview", WINDOW_KEEPRATIO);
 
 	int i = differenceSequence.size() / 2;
-	unsigned char thresh = 0; //Notice: I change this to 0 for unity proj
+	unsigned char thresh = 70;
 	int keyPress = '\0';
 	do {
 		Mat shadowMask;
