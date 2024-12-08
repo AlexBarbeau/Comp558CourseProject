@@ -1,4 +1,6 @@
 #include "ShadowPlane.h"
+#include <algorithm>
+#include <vector>
 
 using namespace cv;
 using namespace std;
@@ -11,10 +13,49 @@ struct ShadowEdge {
 	float time;
 };
 
+void adjustTrack(const Mat& shadows, int& trackPos) {
+	int keyPress = '\0';
+	do {
+		Mat preview = shadows.clone();
+		line(preview, Point2i(trackPos, 0), Point2i(trackPos, preview.rows), Scalar(255, 255, 255));
+
+		Mat fullPreview;
+		merge(vector<Mat>({ shadows, shadows, preview }), fullPreview);
+
+		imshow("Shadow Track", fullPreview);
+
+		keyPress = waitKey(0);
+
+		if (keyPress == 'a')
+		{
+			trackPos--;
+		}
+		else if (keyPress == 'd') 
+		{
+			trackPos++;
+		}
+		if (keyPress == 'z')
+		{
+			trackPos -= shadows.cols / 20;
+		}
+		else if (keyPress == 'x')
+		{
+			trackPos += shadows.cols / 20;;
+		}
+
+		trackPos = max(0, min(trackPos, shadows.cols - 1));
+	} while (keyPress != 'e');
+}
+
 void calculateShadowPlane(const Mat& shadowTime, Point3f lightPoint, const Mat& homography, const Mat& worldCoordinates, vector<Point3f>& outNormals, vector<float>& outPlaneTimes)
 {
-	const int track1Pos = 50;
-	const int track2Pos = 1870;
+	int track1Pos = min(50, shadowTime.cols - 1);
+	int track2Pos = max(shadowTime.cols - 50, 0);
+
+	namedWindow("Shadow Track", WINDOW_NORMAL);
+	adjustTrack(shadowTime, track1Pos);
+	adjustTrack(shadowTime, track2Pos);
+	destroyWindow("Shadow Track");
 
 	Mat track1 = shadowTime.col(track1Pos);
 	Mat track2 = shadowTime.col(track2Pos);
