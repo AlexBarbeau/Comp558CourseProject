@@ -18,7 +18,7 @@ using namespace std;
 const Size calibrationPatternSize = Size(6, 9);
 
 int main() {
-	Mat calibrationImage = imread("./images/constructed2/checkerboard.png", 1);
+	Mat calibrationImage = imread("./images/stanford/checkerboard.png", 1);
 	Mat homography;
 	findHomographyForCheckerboard(calibrationImage, calibrationPatternSize, homography);
 
@@ -60,8 +60,8 @@ int main() {
 	destroyWindow("Calibration Image");
 
 	
-	Mat shadowImage1 = imread("./images/constructed2/shadow1.png", 1);
-	Mat shadowImage2 = imread("./images/constructed2/shadow2.png", 1);
+	Mat shadowImage1 = imread("./images/stanford/shadow1.png", 1);
+	Mat shadowImage2 = imread("./images/stanford/shadow2.png", 1);
 	Point3d lightPosition = findLightPosition(homography, shadowImage1, 5, shadowImage2, 5);
 
 	//vector<Point2d> lightXY = { Point2d(lightPosition.x, lightPosition.y) };
@@ -80,7 +80,7 @@ int main() {
 	//waitKey(0);
 	
 
-	VideoCapture video = VideoCapture("./images/constructed2/sequence/sequence%d.png");
+	VideoCapture video = VideoCapture("./images/stanford/sequence/sequence%d.png");
 	Mat shadowless;
 	Mat shadowed;
 	vector<Mat> shadowMasks;
