@@ -75,7 +75,7 @@ int main() {
 	//	FONT_HERSHEY_SIMPLEX, 2, lightColour * 0.8, 4
 	//);
 
-	cout << lightPosition;
+	cout << "light found at: " << lightPosition << '\n';
 	//imshow("Calibration Image", calibrationImage);
 	//waitKey(0);
 	

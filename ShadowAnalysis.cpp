@@ -42,16 +42,23 @@ bool isolateShadows(VideoCapture& videoCapture, Mat& outShadowless, Mat& outShad
 	namedWindow("Difference Preview", WINDOW_KEEPRATIO);
 
 	int i = differenceSequence.size() / 2;
-	int sigma = 2;
+	int sigma = 0;
 	unsigned char thresh = 70;
 	int keyPress = '\0';
 	do {
 		Mat blurredDifference;
-		GaussianBlur(differenceSequence[i], blurredDifference, Size(33, 33), sigma, sigma);
+		if (sigma > 0) {
+			GaussianBlur(differenceSequence[i], blurredDifference, Size(33, 33), sigma, sigma);
+		}
+		else
+		{
+			blurredDifference = differenceSequence[i];
+		}
 
 		Mat shadowMask;
 		threshold(blurredDifference, shadowMask, thresh, 255, CV_8U);
 
+		cout << "Threshold:" << (int)thresh << " Sigma:" << sigma << '\n';
 		imshow("Difference Preview", blurredDifference);
 		imshow("Threshold Preview", shadowMask);
 		keyPress = waitKey(0);
@@ -74,7 +81,7 @@ bool isolateShadows(VideoCapture& videoCapture, Mat& outShadowless, Mat& outShad
 		}
 		else if (keyPress == 'o')
 		{
-			if (sigma > 1)
+			if (sigma >= 1)
 			{
 				sigma--;
 			}
@@ -95,7 +102,13 @@ bool isolateShadows(VideoCapture& videoCapture, Mat& outShadowless, Mat& outShad
 	for (const Mat& frame : differenceSequence)
 	{
 		Mat blurredFrame;
-		GaussianBlur(frame, blurredFrame, Size(33, 33), sigma, sigma);
+		if (sigma > 0) {
+			GaussianBlur(frame, blurredFrame, Size(33, 33), sigma, sigma);
+		}
+		else
+		{
+			blurredFrame = frame;
+		}
 
 		outShadowMasks.emplace_back();
 		threshold(blurredFrame, outShadowMasks.back(), thresh, 255, CV_8U);
