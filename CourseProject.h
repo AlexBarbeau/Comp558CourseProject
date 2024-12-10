@@ -88,6 +88,7 @@ int main() {
 
 	namedWindow("Shadowless", WINDOW_NORMAL);
 	imshow("Shadowless", shadowless);
+	imwrite("shadowless.jpg", shadowless);
 
 	Mat shadowTime;
 	findShadowTime(shadowMasks, shadowTime);
@@ -107,6 +108,9 @@ int main() {
 
 	namedWindow("Recovered Geometry", WINDOW_NORMAL);
 	imshow("Recovered Geometry", recoveredCoordinates);
+
+	imwrite("geometryMask.jpg", 255 * coordinateMask);
+	imwrite("recoveredGeometry.jpg", 255 * recoveredCoordinates);
 
 	vector<Point2i> recoveredPoints;
 	findNonZero(coordinateMask, recoveredPoints);
