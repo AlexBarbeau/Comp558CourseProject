@@ -11,14 +11,30 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <string>
+#include <memory>
 
 using namespace cv;
 using namespace std;
 
 const Size calibrationPatternSize = Size(6, 9);
 
+template <typename ... Args>
+string formatString(const char* fmt, const Args& ... args)
+{
+	int pathLength = 1 + snprintf(nullptr, 0, fmt, args...);
+	unique_ptr<char[]> buffer = unique_ptr<char[]>(new char[pathLength]);
+	snprintf(buffer.get(), pathLength, fmt, args...);
+	return string(buffer.get());
+}
+
 int main() {
-	Mat calibrationImage = imread("./images/controller/checkerboard.jpg", 1);
+	cout << "Please input image subfolder and image file extension separated by a space: ";
+	string subfolder, imageExtension;
+	cin >> subfolder >> imageExtension;
+
+	string checkerboardPath = formatString("./images/%s/checkerboard.%s", subfolder, imageExtension);
+	Mat calibrationImage = imread(checkerboardPath, 1);
 	Mat homography;
 	findHomographyForCheckerboard(calibrationImage, calibrationPatternSize, homography);
 
@@ -69,8 +85,12 @@ int main() {
 	cout << "Please input the heights (in checkerboard squares) of the two shadow calibration objects separated by spaces: " << endl;
 	float height1, height2;
 	cin >> height1 >> height2;
-	Mat shadowImage1 = imread("./images/controller/shadow1.jpg", 1);
-	Mat shadowImage2 = imread("./images/controller/shadow2.jpg", 1);
+
+	string shadow1Path = formatString("./images/%s/shadow1.%s", subfolder, imageExtension);
+	string shadow2Path = formatString("./images/%s/shadow2.%s", subfolder, imageExtension);
+
+	Mat shadowImage1 = imread(shadow1Path, 1);
+	Mat shadowImage2 = imread(shadow2Path, 1);
 	Point3d lightPosition = findLightPosition(homography, shadowImage1, height1, shadowImage2, height2);
 
 	//vector<Point2d> lightXY = { Point2d(lightPosition.x, lightPosition.y) };
@@ -89,7 +109,8 @@ int main() {
 	//waitKey(0);
 	
 
-	VideoCapture video = VideoCapture("./images/controller/sequence/sequence%d.jpg");
+	string sequencePath = formatString("./images/%s/sequence/sequence%s.%s", subfolder, "%d", imageExtension);
+	VideoCapture video = VideoCapture(sequencePath);
 	Mat shadowless;
 	Mat shadowed;
 	vector<Mat> shadowMasks;
