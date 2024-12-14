@@ -1,0 +1,5 @@
+file extension: jpg
+camera position: -15.5 0 23
+shadow object heights: 9.5 9.5
+
+For best results, T around 30, sigma around 5

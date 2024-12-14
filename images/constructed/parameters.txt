@@ -1,3 +1,5 @@
 file extension: png
 camera position: 5 -9 9
 shadow object heights: 5 5
+
+for best results, T=0, sigma=0
