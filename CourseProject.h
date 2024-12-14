@@ -33,6 +33,7 @@ int main() {
 
 	namedWindow("Calibration Image", WINDOW_NORMAL);
 	imshow("Calibration Image", calibrationImage);
+	cout << "Press any key to continue" << endl;;
 	waitKey(0);
 
 	// Precompute expected world coordinates of each pixel when projected onto the plane
@@ -55,6 +56,7 @@ int main() {
 		worldPlaneCoordinates
 	);
 	imshow("Calibration Image", worldPlaneCoordinates / 6);
+	cout << "Press any key to continue" << endl;;
 	waitKey(0);
 
 	destroyWindow("Calibration Image");
@@ -92,9 +94,6 @@ int main() {
 
 	Mat shadowTime;
 	findShadowTime(shadowMasks, shadowTime);
-	namedWindow("Shadow Time", WINDOW_NORMAL);
-	imshow("Shadow Time", shadowTime);
-	waitKey(0);
 
 	vector<Point3f> shadowPlaneNormals;
 	vector<float> planeTimes;
@@ -132,6 +131,7 @@ int main() {
 
 	cout << "saved PointCloud.csv";
 
+	cout << "Press any key to exit";
 	waitKey(0);
 
 	return 0;

@@ -41,6 +41,13 @@ bool isolateShadows(VideoCapture& videoCapture, Mat& outShadowless, Mat& outShad
 	namedWindow("Threshold Preview", WINDOW_KEEPRATIO);
 	namedWindow("Difference Preview", WINDOW_KEEPRATIO);
 
+	cout << endl;
+	cout << "Adjust the image threshold" << endl;
+	cout << "Use 'a' and 'd' to seek through the sequence" << endl;
+	cout << "Use '-' and '=' to adjust the threshold" << endl;
+	cout << "Use 'o' and 'p' to adjust the blur radius" << endl;
+	cout << "Press e to confirm and continue" << endl << endl;
+
 	int i = differenceSequence.size() / 2;
 	int sigma = 0;
 	unsigned char thresh = 70;
@@ -97,6 +104,7 @@ bool isolateShadows(VideoCapture& videoCapture, Mat& outShadowless, Mat& outShad
 	} while (keyPress != 'e');
 
 	destroyWindow("Threshold Preview");
+	destroyWindow("Difference Preview");
 
 	outShadowMasks.reserve(differenceSequence.size());
 	for (const Mat& frame : differenceSequence)

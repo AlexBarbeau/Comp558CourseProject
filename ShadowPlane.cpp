@@ -15,9 +15,15 @@ struct ShadowEdge {
 
 void adjustTrack(const Mat& shadows, int& trackPos) {
 	int keyPress = '\0';
+	cout << endl;
+	cout << "Place the shadow rail (red) in a planar region" << endl;
+	cout << "Use 'a' and 'd' to make small adjustments" << endl;
+	cout << "Use 'z' and 'x' to make large adjustments" << endl;
+	cout << "Press 'e' to confirm and continue" << endl << endl;
+
 	do {
 		Mat preview = shadows.clone();
-		line(preview, Point2i(trackPos, 0), Point2i(trackPos, preview.rows), Scalar(255, 255, 255));
+		line(preview, Point2i(trackPos, 0), Point2i(trackPos, preview.rows), Scalar(255, 255, 255), 4);
 
 		Mat fullPreview;
 		merge(vector<Mat>({ shadows, shadows, preview }), fullPreview);

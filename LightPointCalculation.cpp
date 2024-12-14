@@ -55,6 +55,7 @@ void PickShadowPoints(const Mat& image, vector<Point2d>& selectedPoints)
 		};
 	setMouseCallback("Select Shadow Points", onMouse, &selectedPoints);
 
+	cout << "Click on the base of the shadow, then the tip." << endl;
 	while (selectedPoints.size() < 2)
 	{
 		imshow("Select Shadow Points", image);
@@ -66,6 +67,7 @@ void PickShadowPoints(const Mat& image, vector<Point2d>& selectedPoints)
 	Mat preview = image.clone();
 	arrowedLine(preview, selectedPoints[0], selectedPoints[1], Scalar(255, 0, 255), 8);
 	imshow("Select Shadow Points", preview);
+	cout << "Press any key to continue." << endl;
 	waitKey(0);
 
 	destroyWindow("Select Shadow Points");
