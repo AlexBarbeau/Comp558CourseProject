@@ -33,8 +33,13 @@ int main() {
 
 	namedWindow("Calibration Image", WINDOW_NORMAL);
 	imshow("Calibration Image", calibrationImage);
+
 	cout << "Press any key to continue" << endl;;
 	waitKey(0);
+
+	cout << "Please input, separated by spaces, the position of the camera in the displayed basis (x in blue, y in green, z-up): ";
+	float cameraX, cameraY, cameraZ;
+	cin >> cameraX >> cameraY >> cameraZ;
 
 	// Precompute expected world coordinates of each pixel when projected onto the plane
 	Mat imageCoordinates = Mat::zeros(Size(calibrationImage.cols, calibrationImage.rows), CV_32FC2);
@@ -55,16 +60,18 @@ int main() {
 		vector<Mat>({ planarCoordinates, Mat::zeros(Size(calibrationImage.cols, calibrationImage.rows), CV_32F) }),
 		worldPlaneCoordinates
 	);
-	imshow("Calibration Image", worldPlaneCoordinates / 6);
-	cout << "Press any key to continue" << endl;;
-	waitKey(0);
+	// imshow("Calibration Image", worldPlaneCoordinates / 6);
+	// cout << "Press any key to continue" << endl;;
+	// waitKey(0);
 
 	destroyWindow("Calibration Image");
 
-	
+	cout << "Please input the heights (in checkerboard squares) of the two shadow calibration objects separated by spaces: " << endl;
+	float height1, height2;
+	cin >> height1 >> height2;
 	Mat shadowImage1 = imread("./images/controller/shadow1.jpg", 1);
 	Mat shadowImage2 = imread("./images/controller/shadow2.jpg", 1);
-	Point3d lightPosition = findLightPosition(homography, shadowImage1, 9.5, shadowImage2, 9.5);
+	Point3d lightPosition = findLightPosition(homography, shadowImage1, height1, shadowImage2, height2);
 
 	//vector<Point2d> lightXY = { Point2d(lightPosition.x, lightPosition.y) };
 	//vector<Point2d> lightImagePos;
@@ -88,8 +95,6 @@ int main() {
 	vector<Mat> shadowMasks;
 	bool bFoundShadows = isolateShadows(video, shadowless, shadowed, shadowMasks);
 
-	namedWindow("Shadowless", WINDOW_NORMAL);
-	imshow("Shadowless", shadowless);
 	imwrite("shadowless.jpg", shadowless);
 
 	Mat shadowTime;
@@ -99,7 +104,7 @@ int main() {
 	vector<float> planeTimes;
 	calculateShadowPlane(shadowTime, lightPosition, homography, worldPlaneCoordinates, shadowPlaneNormals, planeTimes);
 
-	Point3f cameraPosition = Point3f(-15.5, 0, 23);
+	Point3f cameraPosition = Point3f(cameraX, cameraY, cameraZ);
 
 	Mat recoveredCoordinates;
 	Mat coordinateMask;

@@ -125,5 +125,7 @@ void calculateShadowPlane(const Mat& shadowTime, Point3f lightPoint, const Mat& 
 
 	namedWindow("Shadow Plane Preview", WINDOW_NORMAL);
 	imshow("Shadow Plane Preview", previewImage);
+	cout << "Press any key to continue" << endl;
 	waitKey(0);
+	destroyWindow("Shadow Plane Preview");
 }
