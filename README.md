@@ -1,1 +1,1 @@
-In order to build from source, use Visual C++ compilier with provided VS files. Ideal parameters for image sets are given in parameters.txt in each subfolder.
+In order to build from source, use Visual C++ compilier with provided VS files. Ideal parameters for image sets are given in parameters.txt in each subfolder. Requires OpenCV 4.10.0 to be extracted at the same root location for build to be possible (find it on their website: https://opencv.org/releases/)
